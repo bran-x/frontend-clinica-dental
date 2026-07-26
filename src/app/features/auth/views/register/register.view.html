@@ -1,0 +1,26 @@
+<main class="register-page">
+  <form class="register-card" (ngSubmit)="submit()" #registerForm="ngForm">
+    <a class="back-link" routerLink="/auth/login">Volver al login</a>
+    <h1>Crear cuenta</h1>
+    <p>Registre un usuario interno para acceder al sistema clinico.</p>
+
+    <label>
+      Nombre completo
+      <input name="name" type="text" autocomplete="name" required [(ngModel)]="data.name" />
+    </label>
+
+    <label>
+      Correo electronico
+      <input name="email" type="email" autocomplete="email" required [(ngModel)]="data.email" />
+    </label>
+
+    <label>
+      Contrasena
+      <input name="password" type="password" autocomplete="new-password" required minlength="4" [(ngModel)]="data.password" />
+    </label>
+
+    <button type="submit" [disabled]="registerForm.invalid || isSubmitting">
+      {{ isSubmitting ? 'Registrando...' : 'Registrar' }}
+    </button>
+  </form>
+</main>

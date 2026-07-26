@@ -1,0 +1,120 @@
+<main class="auth-page">
+  <section class="brand-panel" aria-label="Presentacion de Muelas DENT">
+    <div class="brand">
+      <div class="brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" role="img">
+          <path d="M8 3v4.8a4 4 0 0 0 8 0V3" />
+          <path d="M6 3h4" />
+          <path d="M14 3h4" />
+          <path d="M18 12.5v.5a6 6 0 0 1-12 0v-.5" />
+        </svg>
+      </div>
+      <div>
+        <strong>Muelas DENT</strong>
+        <span>Clinica Odontologica</span>
+      </div>
+    </div>
+
+    <div class="headline">
+      <h1>Sistema de<br />Gestion Clinica</h1>
+      <p>
+        Administre pacientes, citas y el historial clinico de su consultorio de forma eficiente y
+        segura.
+      </p>
+    </div>
+
+    <div class="trust-list">
+      <div>
+        <span class="trust-icon">S</span>
+        <p>Acceso seguro con cifrado de datos</p>
+      </div>
+      <div>
+        <span class="trust-icon">P</span>
+        <p>Gestion integral de pacientes</p>
+      </div>
+      <div>
+        <span class="trust-icon">C</span>
+        <p>Control completo de citas</p>
+      </div>
+    </div>
+
+    <footer>© 2024 Muelas DENT. Todos los derechos reservados.</footer>
+  </section>
+
+  <section class="form-panel" aria-label="Formulario de inicio de sesion">
+    <div class="mobile-brand">
+      <div class="brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" role="img">
+          <path d="M8 3v4.8a4 4 0 0 0 8 0V3" />
+          <path d="M6 3h4" />
+          <path d="M14 3h4" />
+          <path d="M18 12.5v.5a6 6 0 0 1-12 0v-.5" />
+        </svg>
+      </div>
+      <strong>Muelas DENT</strong>
+    </div>
+
+    <form class="auth-card" (ngSubmit)="submit()" #loginForm="ngForm">
+      <div class="form-title">
+        <h2>Iniciar sesión</h2>
+        <p>Ingrese sus credenciales para continuar</p>
+      </div>
+
+      <label>
+        <span class="label-text">Usuario o correo electronico <span>*</span></span>
+        <div class="field">
+          <span aria-hidden="true">@</span>
+          <input
+            name="username"
+            type="text"
+            autocomplete="off"
+            placeholder="admin o correo@ejemplo.com"
+            required
+            [(ngModel)]="credentials.username"
+          />
+        </div>
+      </label>
+
+      <label>
+        <span class="label-text">Contrasena <span>*</span></span>
+        <div class="field">
+          <input
+            name="password"
+            [type]="showPassword ? 'text' : 'password'"
+            autocomplete="new-password"
+            required
+            [(ngModel)]="credentials.password"
+          />
+          <button class="icon-button" type="button" (click)="showPassword = !showPassword">
+            {{ showPassword ? 'Ocultar' : 'Ver' }}
+          </button>
+        </div>
+      </label>
+
+      <div class="form-row">
+        <label class="checkbox">
+          <input name="remember" type="checkbox" [(ngModel)]="credentials.remember" />
+          Recordarme
+        </label>
+        <a routerLink="/auth/registro">Crear cuenta</a>
+      </div>
+
+      @if (errorMessage) {
+        <p class="error" role="alert">
+          <span aria-hidden="true">!</span>
+          {{ errorMessage }}
+        </p>
+      }
+
+      <button class="submit-button" type="submit" [disabled]="loginForm.invalid || isSubmitting">
+        {{ isSubmitting ? 'Ingresando...' : 'Iniciar sesión' }}
+      </button>
+
+    </form>
+
+    <address>
+      Muelas DENT - Av. La Salud 1205, Lima, Peru<br />
+      soporte&#64;muelasdent.pe · +51 1 234-5678
+    </address>
+  </section>
+</main>

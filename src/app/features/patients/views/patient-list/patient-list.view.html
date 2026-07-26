@@ -1,0 +1,290 @@
+<section class="patients-page">
+  <header class="page-heading">
+    <div>
+      <h1>Gestion de Clientes</h1>
+      <p>{{ filteredPatients().length }} pacientes encontrados</p>
+    </div>
+
+    <div class="heading-actions">
+      <button class="ghost-button" type="button">
+        <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3v12" />
+          <path d="m8 7 4-4 4 4" />
+          <path d="M5 14v5h14v-5" />
+        </svg>
+        Importar
+      </button>
+      <button class="ghost-button" type="button">
+        <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 21V9" />
+          <path d="m8 17 4 4 4-4" />
+          <path d="M5 10V5h14v5" />
+        </svg>
+        Exportar
+      </button>
+      <button class="primary-button" type="button" (click)="openCreate()">+ Nuevo Cliente</button>
+    </div>
+  </header>
+
+  <section class="filters">
+    <label class="search-field">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" />
+        <path d="m16.5 16.5 4 4" />
+      </svg>
+      <input
+        type="search"
+        placeholder="Buscar por nombre, DNI, correo..."
+        [ngModel]="query()"
+        (ngModelChange)="query.set($event)"
+      />
+    </label>
+  </section>
+
+  @if (isLoading()) {
+    <p class="state-message">Cargando pacientes...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="state-message error-message">{{ errorMessage() }}</p>
+  }
+
+  <section class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>DNI</th>
+          <th>Nombre completo</th>
+          <th>Nacimiento</th>
+          <th>Telefono</th>
+          <th>Correo</th>
+          <th>Observaciones</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (patient of filteredPatients(); track patient.id) {
+          <tr>
+            <td>{{ formatShortId(patient.id) }}</td>
+            <td class="strong">{{ patient.dni }}</td>
+            <td>
+              <strong>{{ getFullName(patient) }}</strong>
+            </td>
+            <td>{{ formatDate(patient.birthDate) }}</td>
+            <td>{{ patient.phone || '-' }}</td>
+            <td>{{ patient.email || '-' }}</td>
+            <td>{{ patient.observations || '-' }}</td>
+            <td>
+              <div class="row-actions">
+                <button type="button" title="Ver ficha" (click)="openDetail(patient)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z" />
+                    <circle cx="12" cy="12" r="2.5" />
+                  </svg>
+                </button>
+                <button type="button" title="Editar" (click)="openEdit(patient)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 20h4l10.5-10.5a2.8 2.8 0 0 0-4-4L4 16v4z" />
+                    <path d="m13.5 6.5 4 4" />
+                  </svg>
+                </button>
+                <button type="button" title="Eliminar" (click)="openDelete(patient)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 7h16" />
+                    <path d="M10 11v6" />
+                    <path d="M14 11v6" />
+                    <path d="M6 7l1 14h10l1-14" />
+                    <path d="M9 7V4h6v3" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <footer class="table-footer">
+      <span>Mostrando 1-{{ filteredPatients().length }} de {{ patients().length }} registros</span>
+      <div class="pagination">
+        <button type="button">«</button>
+        <button type="button">‹</button>
+        <button class="active" type="button">1</button>
+        <button type="button">2</button>
+        <button type="button">›</button>
+        <button type="button">»</button>
+      </div>
+    </footer>
+  </section>
+</section>
+
+@if (modalMode() === 'create' || modalMode() === 'edit') {
+  <div class="modal-backdrop">
+    <form class="modal patient-form" (ngSubmit)="savePatient()" #patientForm="ngForm">
+      <header class="modal-header">
+        <div class="modal-title">
+          <span class="modal-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
+              <circle cx="9.5" cy="7" r="4" />
+              <path d="M19 8v6" />
+              <path d="M22 11h-6" />
+            </svg>
+          </span>
+          <div>
+            <h2>{{ modalMode() === 'edit' ? 'Editar Paciente' : 'Nuevo Paciente' }}</h2>
+            <p>{{ modalMode() === 'edit' ? 'Actualice los datos del paciente' : 'Complete los datos del paciente' }}</p>
+          </div>
+        </div>
+        <button class="close-button" type="button" (click)="closeModal()">×</button>
+      </header>
+
+      <div class="form-grid">
+        <label>
+          <span class="label-text">DNI <span>*</span></span>
+          <input name="dni" inputmode="numeric" placeholder="#   12345678" required maxlength="8" [(ngModel)]="formData.dni" />
+        </label>
+
+        <label>
+          <span class="label-text">Nombres <span>*</span></span>
+          <input name="firstName" placeholder="Jorge Luis" required [(ngModel)]="formData.firstName" />
+        </label>
+
+        <label>
+          <span class="label-text">Apellidos <span>*</span></span>
+          <input name="lastName" placeholder="Ramirez Chavez" required [(ngModel)]="formData.lastName" />
+        </label>
+
+        <label>
+          <span class="label-text">Fecha de nacimiento</span>
+          <input name="birthDate" type="date" [(ngModel)]="formData.birthDate" />
+        </label>
+
+        <label>
+          <span class="label-text">Telefono</span>
+          <input name="phone" inputmode="tel" placeholder="987654321" [(ngModel)]="formData.phone" />
+        </label>
+
+        <label>
+          <span class="label-text">Correo electronico</span>
+          <input name="email" type="email" placeholder="correo@ejemplo.com" [(ngModel)]="formData.email" />
+        </label>
+
+        <label class="wide">
+          <span class="label-text">Observaciones</span>
+          <textarea name="observations" placeholder="Alergias, condiciones especiales..." [(ngModel)]="formData.observations"></textarea>
+        </label>
+      </div>
+
+      <footer class="modal-actions">
+        <button class="secondary-button" type="button" (click)="closeModal()">Cancelar</button>
+        <button class="primary-button" type="submit" [disabled]="patientForm.invalid">
+          ✓ {{ modalMode() === 'edit' ? 'Guardar cambios' : 'Guardar paciente' }}
+        </button>
+      </footer>
+    </form>
+  </div>
+}
+
+@if (modalMode() === 'detail' && selectedPatient(); as patient) {
+  <div class="modal-backdrop">
+    <article class="modal patient-detail">
+      <header class="modal-header">
+        <div class="modal-title">
+          <span class="modal-icon">D</span>
+          <div>
+            <h2>Ficha del Paciente</h2>
+            <p>ID: {{ formatShortId(patient.id) }} · Registrado el {{ formatDate(patient.registeredAt) }}</p>
+          </div>
+        </div>
+        <button class="close-button" type="button" (click)="closeModal()">×</button>
+      </header>
+
+      <section class="profile-band">
+        <span class="avatar large">{{ getInitials(patient) }}</span>
+        <div>
+          <h3>{{ getFullName(patient) }}</h3>
+        </div>
+      </section>
+
+      <section class="detail-grid">
+        <div>
+          <span>DNI</span>
+          <strong>{{ patient.dni }}</strong>
+        </div>
+        <div>
+          <span>Fecha nac.</span>
+          <strong>
+            {{ formatDate(patient.birthDate) }}
+            @if (getAge(patient.birthDate) !== null) {
+              ({{ getAge(patient.birthDate) }} anos)
+            }
+          </strong>
+        </div>
+        <div>
+          <span>Telefono</span>
+          <strong>{{ patient.phone }}</strong>
+        </div>
+        <div>
+          <span>Correo</span>
+          <strong>{{ patient.email }}</strong>
+        </div>
+      </section>
+
+      <section class="observations">
+        <span>Observaciones</span>
+        <strong>{{ patient.observations || 'Sin observaciones' }}</strong>
+      </section>
+    </article>
+  </div>
+}
+
+@if (modalMode() === 'delete' && selectedPatient(); as patient) {
+  <div class="modal-backdrop">
+    <article class="modal delete-modal">
+      <header class="modal-header">
+        <div class="modal-title">
+          <span class="modal-icon warning">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3 22 20H2L12 3z" />
+              <path d="M12 9v5" />
+              <path d="M12 17h.01" />
+            </svg>
+          </span>
+          <h2>Eliminar paciente</h2>
+        </div>
+        <button class="close-button" type="button" (click)="closeModal()">×</button>
+      </header>
+
+      <section class="delete-body">
+        <div class="trash-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+            <path d="M6 7l1 14h10l1-14" />
+            <path d="M9 7V4h6v3" />
+          </svg>
+        </div>
+        <h3>¿Esta seguro de eliminar este cliente?</h3>
+        <strong>{{ getFullName(patient) }}</strong>
+        <p>Esta accion no se puede deshacer. Se eliminara permanentemente el registro del paciente.</p>
+      </section>
+
+      <footer class="delete-actions">
+        <button class="secondary-button" type="button" (click)="closeModal()">Cancelar</button>
+        <button class="danger-button" type="button" (click)="deletePatient()">
+          <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+            <path d="M6 7l1 14h10l1-14" />
+            <path d="M9 7V4h6v3" />
+          </svg>
+          Si, eliminar
+        </button>
+      </footer>
+    </article>
+  </div>
+}

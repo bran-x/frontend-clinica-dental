@@ -1,0 +1,31 @@
+<div class="private-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">D</div>
+      <div>
+        <strong>Muelas DENT</strong>
+        <span>Gestion clinica</span>
+      </div>
+    </div>
+
+    <nav aria-label="Menu principal">
+      <a routerLink="/pacientes" routerLinkActive="active">Pacientes</a>
+      <a routerLink="/citas" routerLinkActive="active">Citas</a>
+    </nav>
+  </aside>
+
+  <section class="main-area">
+    <header class="topbar">
+      <div>
+        <strong>{{ user()?.name }}</strong>
+        <span>{{ user()?.username }}</span>
+      </div>
+
+      <button type="button" (click)="logout()">Cerrar sesion</button>
+    </header>
+
+    <main class="private-workspace">
+      <router-outlet />
+    </main>
+  </section>
+</div>
