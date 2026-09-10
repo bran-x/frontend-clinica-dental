@@ -1,24 +1,36 @@
-import { Injectable, signal } from '@angular/core';
-import { forkJoin, map, Observable, tap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject, signal } from '@angular/core';
+import { forkJoin, Observable, tap } from 'rxjs';
 
+import { API_BASE_URL } from '../../../core/api/api.config';
 import {
   AppointmentCreateDto,
   AppointmentOutDto,
   AppointmentStatusDto,
   AppointmentUpdateDto,
+  DentistOutDto,
   PatientOutDto
 } from '../../../core/api/api.types';
 import { PatientApiService } from '../../patients/services/patient-api.service';
 import { AppointmentApiService } from '../services/appointment-api.service';
-import { Appointment, AppointmentFormData, AppointmentPatientOption } from '../models/appointment.model';
+import {
+  Appointment,
+  AppointmentDentistOption,
+  AppointmentFormData,
+  AppointmentPatientOption
+} from '../models/appointment.model';
 
 @Injectable({ providedIn: 'root' })
 export class AppointmentController {
+  private readonly http = inject(HttpClient);
+
   private readonly appointments = signal<Appointment[]>([]);
   private readonly patients = signal<AppointmentPatientOption[]>([]);
+  private readonly dentists = signal<AppointmentDentistOption[]>([]);
 
   readonly list = this.appointments.asReadonly();
   readonly patientOptions = this.patients.asReadonly();
+  readonly dentistOptions = this.dentists.asReadonly();
   readonly isLoading = signal(false);
   readonly errorMessage = signal('');
 
@@ -33,9 +45,10 @@ export class AppointmentController {
 
     forkJoin({
       patients: this.patientApiService.list(undefined, 0, 200),
+      dentists: this.http.get<DentistOutDto[]>(`${API_BASE_URL}/dentists`, { params: { limit: 200 } }),
       appointments: this.appointmentApiService.list({ limit: 200 })
     }).subscribe({
-      next: ({ patients, appointments }) => {
+      next: ({ patients, dentists, appointments }) => {
         const patientNames = this.createPatientNameMap(patients);
         this.patients.set(
           patients.map((patient) => ({
@@ -43,6 +56,7 @@ export class AppointmentController {
             name: `${patient.first_name} ${patient.last_name}`
           }))
         );
+        this.dentists.set(dentists.map((dentist) => ({ id: dentist.id, name: dentist.full_name })));
         this.appointments.set(
           appointments.map((appointment) => this.toAppointment(appointment, patientNames))
         );
@@ -138,6 +152,7 @@ export class AppointmentController {
       id: appointment.id,
       patientId: appointment.patient_id,
       patientName: patientNames.get(appointment.patient_id) ?? appointment.patient_id,
+      dentistId: appointment.dentist_id,
       dentistName: appointment.dentist_name,
       reason: appointment.reason,
       startsAt: appointment.starts_at,
@@ -151,7 +166,7 @@ export class AppointmentController {
   private toCreateDto(data: AppointmentFormData): AppointmentCreateDto {
     return {
       patient_id: data.patient_id,
-      dentist_name: data.dentist_name,
+      dentist_id: data.dentist_id,
       starts_at: this.toApiDateTime(data.starts_at),
       duration_minutes: data.duration_minutes,
       reason: data.reason
@@ -160,7 +175,7 @@ export class AppointmentController {
 
   private toUpdateDto(data: AppointmentFormData): AppointmentUpdateDto {
     return {
-      dentist_name: data.dentist_name,
+      dentist_id: data.dentist_id,
       starts_at: this.toApiDateTime(data.starts_at),
       duration_minutes: data.duration_minutes,
       reason: data.reason

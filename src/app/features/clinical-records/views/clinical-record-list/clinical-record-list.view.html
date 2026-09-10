@@ -1,0 +1,328 @@
+<section class="clinical-records-page">
+  <header class="page-heading">
+    <div>
+      <h1>Historias Clinicas</h1>
+      <p>{{ filteredClinicalRecords().length }} historias encontradas</p>
+    </div>
+
+    <div class="heading-actions">
+      <button class="primary-button" type="button" (click)="openCreate()">+ Nueva Historia</button>
+    </div>
+  </header>
+
+  <section class="filters">
+    <label class="search-field">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" />
+        <path d="m16.5 16.5 4 4" />
+      </svg>
+      <input
+        type="search"
+        placeholder="Buscar por paciente, odontologo, diagnostico..."
+        [ngModel]="query()"
+        (ngModelChange)="query.set($event)"
+      />
+    </label>
+  </section>
+
+  @if (isLoading()) {
+    <p class="state-message">Cargando historias clinicas...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="state-message error-message">{{ errorMessage() }}</p>
+  }
+
+  <section class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Paciente</th>
+          <th>Odontologo</th>
+          <th>Diagnostico</th>
+          <th>Fecha</th>
+          <th>Hallazgos</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (clinicalRecord of filteredClinicalRecords(); track clinicalRecord.id) {
+          <tr>
+            <td>{{ formatShortId(clinicalRecord.id) }}</td>
+            <td class="strong">{{ clinicalRecord.patientName }}</td>
+            <td>{{ clinicalRecord.dentistName }}</td>
+            <td>{{ clinicalRecord.diagnosis || '-' }}</td>
+            <td>{{ formatDate(clinicalRecord.createdAt) }}</td>
+            <td>{{ clinicalRecord.odontogramEntries.length }}</td>
+            <td>
+              <div class="row-actions">
+                <button type="button" title="Ver historia" (click)="openDetail(clinicalRecord)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z" />
+                    <circle cx="12" cy="12" r="2.5" />
+                  </svg>
+                </button>
+                <button type="button" title="Editar" (click)="openEdit(clinicalRecord)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 20h4l10.5-10.5a2.8 2.8 0 0 0-4-4L4 16v4z" />
+                    <path d="m13.5 6.5 4 4" />
+                  </svg>
+                </button>
+                <button type="button" title="Eliminar" (click)="openDelete(clinicalRecord)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 7h16" />
+                    <path d="M10 11v6" />
+                    <path d="M14 11v6" />
+                    <path d="M6 7l1 14h10l1-14" />
+                    <path d="M9 7V4h6v3" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <footer class="table-footer">
+      <span>Mostrando 1-{{ filteredClinicalRecords().length }} de {{ clinicalRecords().length }} registros</span>
+      <div class="pagination">
+        <button type="button">«</button>
+        <button type="button">‹</button>
+        <button class="active" type="button">1</button>
+        <button type="button">›</button>
+        <button type="button">»</button>
+      </div>
+    </footer>
+  </section>
+</section>
+
+@if (modalMode() === 'create' || modalMode() === 'edit') {
+  <div class="modal-backdrop">
+    <form class="modal clinical-record-form" (ngSubmit)="saveClinicalRecord()" #clinicalRecordForm="ngForm">
+      <header class="modal-header">
+        <div class="modal-title">
+          <span class="modal-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <path d="M14 2v6h6" />
+              <path d="M8 13h8" />
+              <path d="M8 17h5" />
+            </svg>
+          </span>
+          <div>
+            <h2>{{ modalMode() === 'edit' ? 'Editar Historia Clinica' : 'Nueva Historia Clinica' }}</h2>
+            <p>{{ modalMode() === 'edit' ? 'Actualice los datos que recibe el backend' : 'Complete los datos que recibe el backend' }}</p>
+          </div>
+        </div>
+        <button class="close-button" type="button" (click)="closeModal()">×</button>
+      </header>
+
+      <div class="form-grid">
+        @if (modalMode() === 'create') {
+          <label>
+            <span class="label-text">Paciente <span>*</span></span>
+            <select name="patient_id" required [(ngModel)]="formData.patient_id">
+              @for (patient of patientOptions(); track patient.id) {
+                <option [value]="patient.id">{{ patient.name }}</option>
+              }
+            </select>
+          </label>
+        } @else if (selectedClinicalRecord(); as clinicalRecord) {
+          <label>
+            <span class="label-text">Paciente</span>
+            <input name="patient_name" type="text" [value]="clinicalRecord.patientName" disabled />
+          </label>
+        }
+
+        <label>
+          <span class="label-text">Odontologo <span>*</span></span>
+          <select name="dentist_id" required [(ngModel)]="formData.dentist_id">
+            @for (dentist of dentistOptions(); track dentist.id) {
+              <option [value]="dentist.id">{{ dentist.name }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="wide">
+          <span class="label-text">Motivo de consulta</span>
+          <textarea name="chief_complaint" [(ngModel)]="formData.chief_complaint"></textarea>
+        </label>
+
+        <label class="wide">
+          <span class="label-text">Diagnostico</span>
+          <textarea name="diagnosis" [(ngModel)]="formData.diagnosis"></textarea>
+        </label>
+
+        <label class="wide">
+          <span class="label-text">Notas</span>
+          <textarea name="notes" [(ngModel)]="formData.notes"></textarea>
+        </label>
+
+        <div class="wide odontogram-editor">
+          <div class="odontogram-editor-header">
+            <span class="label-text">Odontograma</span>
+            <button class="ghost-button" type="button" (click)="addOdontogramRow()">+ Agregar hallazgo</button>
+          </div>
+
+          @if (formData.odontogram_entries.length === 0) {
+            <p class="odontogram-empty">Sin hallazgos registrados.</p>
+          }
+
+          @for (entry of formData.odontogram_entries; track $index) {
+            <div class="odontogram-row">
+              <input
+                name="tooth_fdi_{{ $index }}"
+                type="text"
+                maxlength="2"
+                placeholder="Pieza"
+                required
+                [(ngModel)]="entry.toothFdi"
+              />
+              <select name="surface_{{ $index }}" [(ngModel)]="entry.surface">
+                <option value="">Sin superficie</option>
+                @for (surface of surfaceOptions; track surface) {
+                  <option [value]="surface">{{ surface }}</option>
+                }
+              </select>
+              <input
+                name="condition_{{ $index }}"
+                type="text"
+                placeholder="Condicion"
+                required
+                [(ngModel)]="entry.condition"
+              />
+              <input
+                name="odontogram_notes_{{ $index }}"
+                type="text"
+                placeholder="Notas"
+                [(ngModel)]="entry.notes"
+              />
+              <button class="danger-button" type="button" (click)="removeOdontogramRow($index)">Quitar</button>
+            </div>
+          }
+        </div>
+      </div>
+
+      <footer class="modal-actions">
+        <button class="secondary-button" type="button" (click)="closeModal()">Cancelar</button>
+        <button class="primary-button" type="submit" [disabled]="clinicalRecordForm.invalid">
+          ✓ {{ modalMode() === 'edit' ? 'Guardar cambios' : 'Guardar historia' }}
+        </button>
+      </footer>
+    </form>
+  </div>
+}
+
+@if (modalMode() === 'detail' && selectedClinicalRecord(); as clinicalRecord) {
+  <div class="modal-backdrop">
+    <article class="modal clinical-record-detail">
+      <header class="modal-header">
+        <div class="modal-title">
+          <span class="modal-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <path d="M14 2v6h6" />
+            </svg>
+          </span>
+          <div>
+            <h2>Ficha de la Historia Clinica</h2>
+            <p>ID: {{ formatShortId(clinicalRecord.id) }}</p>
+          </div>
+        </div>
+        <button class="close-button" type="button" (click)="closeModal()">×</button>
+      </header>
+
+      <section class="detail-grid">
+        <div>
+          <span>Paciente</span>
+          <strong>{{ clinicalRecord.patientName }}</strong>
+        </div>
+        <div>
+          <span>Odontologo</span>
+          <strong>{{ clinicalRecord.dentistName }}</strong>
+        </div>
+        <div class="wide">
+          <span>Motivo de consulta</span>
+          <strong>{{ clinicalRecord.chiefComplaint || '-' }}</strong>
+        </div>
+        <div class="wide">
+          <span>Diagnostico</span>
+          <strong>{{ clinicalRecord.diagnosis || '-' }}</strong>
+        </div>
+        <div class="wide">
+          <span>Notas</span>
+          <strong>{{ clinicalRecord.notes || '-' }}</strong>
+        </div>
+      </section>
+
+      <section class="odontogram-list">
+        <span>Odontograma</span>
+        @if (clinicalRecord.odontogramEntries.length === 0) {
+          <p class="odontogram-empty">Sin hallazgos registrados.</p>
+        }
+        <ul>
+          @for (entry of clinicalRecord.odontogramEntries; track $index) {
+            <li>
+              <strong>Pieza {{ entry.toothFdi }}</strong>
+              <span>{{ entry.surface || 'Sin superficie' }} · {{ entry.condition }}</span>
+              @if (entry.notes) {
+                <em>{{ entry.notes }}</em>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    </article>
+  </div>
+}
+
+@if (modalMode() === 'delete' && selectedClinicalRecord(); as clinicalRecord) {
+  <div class="modal-backdrop">
+    <article class="modal delete-modal">
+      <header class="modal-header">
+        <div class="modal-title">
+          <span class="modal-icon warning">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3 22 20H2L12 3z" />
+              <path d="M12 9v5" />
+              <path d="M12 17h.01" />
+            </svg>
+          </span>
+          <h2>Eliminar historia clinica</h2>
+        </div>
+        <button class="close-button" type="button" (click)="closeModal()">×</button>
+      </header>
+
+      <section class="delete-body">
+        <div class="trash-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+            <path d="M6 7l1 14h10l1-14" />
+            <path d="M9 7V4h6v3" />
+          </svg>
+        </div>
+        <h3>¿Esta seguro de eliminar esta historia clinica?</h3>
+        <strong>{{ clinicalRecord.patientName }}</strong>
+        <p>Esta accion no se puede deshacer. Se eliminara permanentemente el registro.</p>
+      </section>
+
+      <footer class="delete-actions">
+        <button class="secondary-button" type="button" (click)="closeModal()">Cancelar</button>
+        <button class="danger-button" type="button" (click)="deleteClinicalRecord()">
+          <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+            <path d="M6 7l1 14h10l1-14" />
+            <path d="M9 7V4h6v3" />
+          </svg>
+          Si, eliminar
+        </button>
+      </footer>
+    </article>
+  </div>
+}

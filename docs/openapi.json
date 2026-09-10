@@ -351,7 +351,7 @@
           "Pacientes"
         ],
         "summary": "Eliminar paciente",
-        "description": "Borra también todas sus citas (cascada).",
+        "description": "Borra también sus citas, historia clínica y planes de tratamiento (cascada).",
         "operationId": "delete_patient_patients__patient_id__delete",
         "security": [
           {
@@ -386,13 +386,298 @@
         }
       }
     },
+    "/dentists": {
+      "post": {
+        "tags": [
+          "Odontólogos"
+        ],
+        "summary": "Registrar odontólogo",
+        "operationId": "create_dentist_dentists_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DentistCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DentistOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Odontólogos"
+        ],
+        "summary": "Listar odontólogos",
+        "operationId": "list_dentists_dentists_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Busca por nombre o especialidad",
+              "title": "Q"
+            },
+            "description": "Busca por nombre o especialidad"
+          },
+          {
+            "name": "is_active",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Active"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DentistOut"
+                  },
+                  "title": "Response List Dentists Dentists Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dentists/{dentist_id}": {
+      "get": {
+        "tags": [
+          "Odontólogos"
+        ],
+        "summary": "Obtener odontólogo por id",
+        "operationId": "get_dentist_dentists__dentist_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "dentist_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dentist Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DentistOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Odontólogos"
+        ],
+        "summary": "Actualizar odontólogo",
+        "description": "Actualización parcial: solo se tocan los campos enviados.",
+        "operationId": "update_dentist_dentists__dentist_id__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "dentist_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dentist Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DentistUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DentistOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Odontólogos"
+        ],
+        "summary": "Eliminar odontólogo",
+        "description": "Rechaza con 409 si el odontólogo tiene citas agendadas o en curso.",
+        "operationId": "delete_dentist_dentists__dentist_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "dentist_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dentist Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/appointments": {
       "post": {
         "tags": [
           "Citas"
         ],
         "summary": "Agendar cita",
-        "description": "Rechaza con 409 si el dentista ya tiene otra cita solapada en ese horario.",
+        "description": "Rechaza con 409 si el dentista ya tiene otra cita solapada, si está fuera de su horario configurado o si está inactivo.",
         "operationId": "create_appointment_appointments_post",
         "security": [
           {
@@ -462,7 +747,7 @@
             }
           },
           {
-            "name": "dentist_name",
+            "name": "dentist_id",
             "in": "query",
             "required": false,
             "schema": {
@@ -474,7 +759,7 @@
                   "type": "null"
                 }
               ],
-              "title": "Dentist Name"
+              "title": "Dentist Id"
             }
           },
           {
@@ -634,7 +919,7 @@
           "Citas"
         ],
         "summary": "Actualizar cita",
-        "description": "Revalida el solapamiento si cambia el dentista, la fecha o la duración.",
+        "description": "Revalida el solapamiento y el horario si cambia el dentista, la fecha o la duración.",
         "operationId": "update_appointment_appointments__appointment_id__put",
         "security": [
           {
@@ -781,6 +1066,889 @@
         }
       }
     },
+    "/clinical-records": {
+      "post": {
+        "tags": [
+          "Historia clínica"
+        ],
+        "summary": "Crear registro de historia clínica",
+        "description": "Incluye opcionalmente entradas de odontograma (pieza FDI, superficie, condición).",
+        "operationId": "create_clinical_record_clinical_records_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClinicalRecordCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClinicalRecordOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Historia clínica"
+        ],
+        "summary": "Listar registros de historia clínica",
+        "description": "Filtros opcionales por paciente y odontólogo.",
+        "operationId": "list_clinical_records_clinical_records_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "patient_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Patient Id"
+            }
+          },
+          {
+            "name": "dentist_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dentist Id"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClinicalRecordOut"
+                  },
+                  "title": "Response List Clinical Records Clinical Records Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clinical-records/{record_id}": {
+      "get": {
+        "tags": [
+          "Historia clínica"
+        ],
+        "summary": "Obtener registro por id",
+        "operationId": "get_clinical_record_clinical_records__record_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Record Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClinicalRecordOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Historia clínica"
+        ],
+        "summary": "Actualizar registro de historia clínica",
+        "description": "Actualización parcial: solo se tocan los campos enviados. `odontogram_entries` reemplaza la lista completa.",
+        "operationId": "update_clinical_record_clinical_records__record_id__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Record Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClinicalRecordUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClinicalRecordOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Historia clínica"
+        ],
+        "summary": "Eliminar registro de historia clínica",
+        "operationId": "delete_clinical_record_clinical_records__record_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Record Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/treatments": {
+      "post": {
+        "tags": [
+          "Tratamientos"
+        ],
+        "summary": "Crear tratamiento en el catálogo",
+        "operationId": "create_treatment_treatments_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TreatmentCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TreatmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Tratamientos"
+        ],
+        "summary": "Listar tratamientos del catálogo",
+        "operationId": "list_treatments_treatments_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Busca por nombre o código",
+              "title": "Q"
+            },
+            "description": "Busca por nombre o código"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "name": "is_active",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Active"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TreatmentOut"
+                  },
+                  "title": "Response List Treatments Treatments Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/treatments/{treatment_id}": {
+      "get": {
+        "tags": [
+          "Tratamientos"
+        ],
+        "summary": "Obtener tratamiento por id",
+        "operationId": "get_treatment_treatments__treatment_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "treatment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Treatment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TreatmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Tratamientos"
+        ],
+        "summary": "Actualizar tratamiento",
+        "description": "Actualización parcial: solo se tocan los campos enviados.",
+        "operationId": "update_treatment_treatments__treatment_id__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "treatment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Treatment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TreatmentUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TreatmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Tratamientos"
+        ],
+        "summary": "Eliminar tratamiento del catálogo",
+        "operationId": "delete_treatment_treatments__treatment_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "treatment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Treatment Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/treatment-plans": {
+      "post": {
+        "tags": [
+          "Planes de tratamiento"
+        ],
+        "summary": "Crear plan de tratamiento",
+        "operationId": "create_treatment_plan_treatment_plans_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TreatmentPlanCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TreatmentPlanOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Planes de tratamiento"
+        ],
+        "summary": "Listar planes de tratamiento",
+        "description": "Filtros opcionales por paciente, odontólogo y estado.",
+        "operationId": "list_treatment_plans_treatment_plans_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "patient_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Patient Id"
+            }
+          },
+          {
+            "name": "dentist_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dentist Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/TreatmentPlanStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TreatmentPlanOut"
+                  },
+                  "title": "Response List Treatment Plans Treatment Plans Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/treatment-plans/{plan_id}": {
+      "get": {
+        "tags": [
+          "Planes de tratamiento"
+        ],
+        "summary": "Obtener plan por id",
+        "operationId": "get_treatment_plan_treatment_plans__plan_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TreatmentPlanOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Planes de tratamiento"
+        ],
+        "summary": "Actualizar plan de tratamiento",
+        "description": "Actualización parcial. `items` reemplaza la lista completa y recalcula el total estimado.",
+        "operationId": "update_treatment_plan_treatment_plans__plan_id__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TreatmentPlanUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TreatmentPlanOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Planes de tratamiento"
+        ],
+        "summary": "Eliminar plan de tratamiento",
+        "operationId": "delete_treatment_plan_treatment_plans__plan_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "tags": [
@@ -818,13 +1986,11 @@
               "665f1a2b3c4d5e6f7a8b9c0d"
             ]
           },
-          "dentist_name": {
+          "dentist_id": {
             "type": "string",
-            "maxLength": 120,
-            "minLength": 1,
-            "title": "Dentist Name",
+            "title": "Dentist Id",
             "examples": [
-              "Dr. Pérez"
+              "665f1a2b3c4d5e6f7a8b9c0e"
             ]
           },
           "starts_at": {
@@ -837,8 +2003,8 @@
           },
           "duration_minutes": {
             "type": "integer",
-            "maximum": 480,
-            "minimum": 5,
+            "maximum": 480.0,
+            "minimum": 5.0,
             "title": "Duration Minutes",
             "default": 30
           },
@@ -855,7 +2021,7 @@
         "type": "object",
         "required": [
           "patient_id",
-          "dentist_name",
+          "dentist_id",
           "starts_at",
           "reason"
         ],
@@ -867,14 +2033,9 @@
             "type": "string",
             "title": "Patient Id"
           },
-          "dentist_name": {
+          "dentist_id": {
             "type": "string",
-            "maxLength": 120,
-            "minLength": 1,
-            "title": "Dentist Name",
-            "examples": [
-              "Dr. Pérez"
-            ]
+            "title": "Dentist Id"
           },
           "starts_at": {
             "type": "string",
@@ -886,8 +2047,8 @@
           },
           "duration_minutes": {
             "type": "integer",
-            "maximum": 480,
-            "minimum": 5,
+            "maximum": 480.0,
+            "minimum": 5.0,
             "title": "Duration Minutes",
             "default": 30
           },
@@ -903,6 +2064,11 @@
           "id": {
             "type": "string",
             "title": "Id"
+          },
+          "dentist_name": {
+            "type": "string",
+            "title": "Dentist Name",
+            "description": "Nombre del dentista al momento de agendar (desnormalizado)"
           },
           "status": {
             "$ref": "#/components/schemas/AppointmentStatus"
@@ -921,10 +2087,11 @@
         "type": "object",
         "required": [
           "patient_id",
-          "dentist_name",
+          "dentist_id",
           "starts_at",
           "reason",
           "id",
+          "dentist_name",
           "status",
           "created_at",
           "updated_at"
@@ -954,18 +2121,16 @@
       },
       "AppointmentUpdate": {
         "properties": {
-          "dentist_name": {
+          "dentist_id": {
             "anyOf": [
               {
-                "type": "string",
-                "maxLength": 120,
-                "minLength": 1
+                "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Dentist Name"
+            "title": "Dentist Id"
           },
           "starts_at": {
             "anyOf": [
@@ -983,8 +2148,8 @@
             "anyOf": [
               {
                 "type": "integer",
-                "maximum": 480,
-                "minimum": 5
+                "maximum": 480.0,
+                "minimum": 5.0
               },
               {
                 "type": "null"
@@ -1076,6 +2241,593 @@
         ],
         "title": "Body_login_auth_login_post"
       },
+      "ClinicalRecordCreate": {
+        "properties": {
+          "patient_id": {
+            "type": "string",
+            "title": "Patient Id",
+            "examples": [
+              "665f1a2b3c4d5e6f7a8b9c0d"
+            ]
+          },
+          "dentist_id": {
+            "type": "string",
+            "title": "Dentist Id",
+            "examples": [
+              "665f1a2b3c4d5e6f7a8b9c0e"
+            ]
+          },
+          "appointment_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Appointment Id",
+            "description": "Cita asociada, si aplica"
+          },
+          "chief_complaint": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chief Complaint"
+          },
+          "diagnosis": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diagnosis"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "odontogram_entries": {
+            "items": {
+              "$ref": "#/components/schemas/OdontogramEntry"
+            },
+            "type": "array",
+            "title": "Odontogram Entries"
+          }
+        },
+        "type": "object",
+        "required": [
+          "patient_id",
+          "dentist_id"
+        ],
+        "title": "ClinicalRecordCreate"
+      },
+      "ClinicalRecordOut": {
+        "properties": {
+          "patient_id": {
+            "type": "string",
+            "title": "Patient Id"
+          },
+          "dentist_id": {
+            "type": "string",
+            "title": "Dentist Id"
+          },
+          "appointment_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Appointment Id"
+          },
+          "chief_complaint": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chief Complaint"
+          },
+          "diagnosis": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diagnosis"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "odontogram_entries": {
+            "items": {
+              "$ref": "#/components/schemas/OdontogramEntry"
+            },
+            "type": "array",
+            "title": "Odontogram Entries"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "patient_id",
+          "dentist_id",
+          "id",
+          "created_at"
+        ],
+        "title": "ClinicalRecordOut"
+      },
+      "ClinicalRecordUpdate": {
+        "properties": {
+          "chief_complaint": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chief Complaint"
+          },
+          "diagnosis": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diagnosis"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "odontogram_entries": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/OdontogramEntry"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Odontogram Entries"
+          }
+        },
+        "type": "object",
+        "title": "ClinicalRecordUpdate"
+      },
+      "DentistCreate": {
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Full Name",
+            "examples": [
+              "Dra. Gómez"
+            ]
+          },
+          "license_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License Number",
+            "examples": [
+              "COP-12345"
+            ]
+          },
+          "specialties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Specialties",
+            "examples": [
+              [
+                "Ortodoncia"
+              ]
+            ]
+          },
+          "color_hex": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 7
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color Hex",
+            "examples": [
+              "#006c9a"
+            ]
+          },
+          "bio": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bio"
+          },
+          "work_schedule": {
+            "items": {
+              "$ref": "#/components/schemas/DentistScheduleSlot"
+            },
+            "type": "array",
+            "title": "Work Schedule"
+          }
+        },
+        "type": "object",
+        "required": [
+          "full_name"
+        ],
+        "title": "DentistCreate"
+      },
+      "DentistOut": {
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Full Name",
+            "examples": [
+              "Dra. Gómez"
+            ]
+          },
+          "license_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License Number",
+            "examples": [
+              "COP-12345"
+            ]
+          },
+          "specialties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Specialties",
+            "examples": [
+              [
+                "Ortodoncia"
+              ]
+            ]
+          },
+          "color_hex": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 7
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color Hex",
+            "examples": [
+              "#006c9a"
+            ]
+          },
+          "bio": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bio"
+          },
+          "work_schedule": {
+            "items": {
+              "$ref": "#/components/schemas/DentistScheduleSlot"
+            },
+            "type": "array",
+            "title": "Work Schedule"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "schedule_exceptions": {
+            "items": {
+              "$ref": "#/components/schemas/DentistScheduleException"
+            },
+            "type": "array",
+            "title": "Schedule Exceptions"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "full_name",
+          "id",
+          "is_active",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "DentistOut"
+      },
+      "DentistScheduleException": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date",
+            "examples": [
+              "2026-12-25"
+            ]
+          },
+          "is_available": {
+            "type": "boolean",
+            "title": "Is Available",
+            "description": "true si abre horario extra ese día",
+            "default": false
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date"
+        ],
+        "title": "DentistScheduleException",
+        "description": "Excepción puntual (licencia, feriado, disponibilidad extra) para una fecha."
+      },
+      "DentistScheduleSlot": {
+        "properties": {
+          "weekday": {
+            "type": "integer",
+            "maximum": 6.0,
+            "minimum": 0.0,
+            "title": "Weekday",
+            "description": "0=domingo .. 6=sábado",
+            "examples": [
+              1
+            ]
+          },
+          "start_time": {
+            "type": "string",
+            "format": "time",
+            "title": "Start Time",
+            "examples": [
+              "09:00:00"
+            ]
+          },
+          "end_time": {
+            "type": "string",
+            "format": "time",
+            "title": "End Time",
+            "examples": [
+              "17:00:00"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "weekday",
+          "start_time",
+          "end_time"
+        ],
+        "title": "DentistScheduleSlot",
+        "description": "Bloque recurrente semanal de disponibilidad."
+      },
+      "DentistUpdate": {
+        "properties": {
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Name"
+          },
+          "license_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License Number"
+          },
+          "specialties": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Specialties"
+          },
+          "color_hex": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 7
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color Hex"
+          },
+          "bio": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bio"
+          },
+          "work_schedule": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/DentistScheduleSlot"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Work Schedule"
+          },
+          "schedule_exceptions": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/DentistScheduleException"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schedule Exceptions"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "title": "DentistUpdate"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -1088,6 +2840,63 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "OdontogramEntry": {
+        "properties": {
+          "tooth_fdi": {
+            "type": "string",
+            "maxLength": 2,
+            "minLength": 2,
+            "title": "Tooth Fdi",
+            "description": "Notación FDI, 11-48",
+            "examples": [
+              "11"
+            ]
+          },
+          "surface": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Surface",
+            "description": "mesial|distal|oclusal|vestibular|lingual",
+            "examples": [
+              "oclusal"
+            ]
+          },
+          "condition": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Condition",
+            "examples": [
+              "caries"
+            ]
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tooth_fdi",
+          "condition"
+        ],
+        "title": "OdontogramEntry"
       },
       "PatientCreate": {
         "properties": {
@@ -1416,6 +3225,464 @@
         ],
         "title": "Token"
       },
+      "TreatmentCreate": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Category",
+            "examples": [
+              "Preventivo"
+            ]
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code",
+            "examples": [
+              "D1110"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "examples": [
+              "Limpieza dental"
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "default_price": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Default Price",
+            "examples": [
+              80.0
+            ]
+          },
+          "default_duration_minutes": {
+            "type": "integer",
+            "maximum": 480.0,
+            "minimum": 5.0,
+            "title": "Default Duration Minutes",
+            "default": 30
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "name",
+          "default_price"
+        ],
+        "title": "TreatmentCreate"
+      },
+      "TreatmentOut": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Category",
+            "examples": [
+              "Preventivo"
+            ]
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code",
+            "examples": [
+              "D1110"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "examples": [
+              "Limpieza dental"
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "default_price": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Default Price",
+            "examples": [
+              80.0
+            ]
+          },
+          "default_duration_minutes": {
+            "type": "integer",
+            "maximum": 480.0,
+            "minimum": 5.0,
+            "title": "Default Duration Minutes",
+            "default": 30
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "name",
+          "default_price",
+          "id",
+          "is_active",
+          "created_at"
+        ],
+        "title": "TreatmentOut"
+      },
+      "TreatmentPlanCreate": {
+        "properties": {
+          "patient_id": {
+            "type": "string",
+            "title": "Patient Id",
+            "examples": [
+              "665f1a2b3c4d5e6f7a8b9c0d"
+            ]
+          },
+          "dentist_id": {
+            "type": "string",
+            "title": "Dentist Id",
+            "examples": [
+              "665f1a2b3c4d5e6f7a8b9c0e"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "Title",
+            "examples": [
+              "Plan de rehabilitación oral"
+            ]
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/TreatmentPlanItem"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "patient_id",
+          "dentist_id",
+          "title"
+        ],
+        "title": "TreatmentPlanCreate"
+      },
+      "TreatmentPlanItem": {
+        "properties": {
+          "treatment_id": {
+            "type": "string",
+            "title": "Treatment Id",
+            "examples": [
+              "665f1a2b3c4d5e6f7a8b9c0f"
+            ]
+          },
+          "tooth_fdi": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tooth Fdi",
+            "examples": [
+              "36"
+            ]
+          },
+          "quantity": {
+            "type": "integer",
+            "maximum": 32.0,
+            "minimum": 1.0,
+            "title": "Quantity",
+            "default": 1
+          },
+          "unit_price": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Unit Price"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TreatmentPlanItemStatus",
+            "default": "pending"
+          }
+        },
+        "type": "object",
+        "required": [
+          "treatment_id",
+          "unit_price"
+        ],
+        "title": "TreatmentPlanItem"
+      },
+      "TreatmentPlanItemStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "done",
+          "skipped"
+        ],
+        "title": "TreatmentPlanItemStatus"
+      },
+      "TreatmentPlanOut": {
+        "properties": {
+          "patient_id": {
+            "type": "string",
+            "title": "Patient Id"
+          },
+          "dentist_id": {
+            "type": "string",
+            "title": "Dentist Id"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "Title",
+            "examples": [
+              "Plan de rehabilitación oral"
+            ]
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/TreatmentPlanItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TreatmentPlanStatus"
+          },
+          "total_estimated": {
+            "type": "number",
+            "title": "Total Estimated"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "patient_id",
+          "dentist_id",
+          "title",
+          "id",
+          "status",
+          "total_estimated",
+          "created_at"
+        ],
+        "title": "TreatmentPlanOut"
+      },
+      "TreatmentPlanStatus": {
+        "type": "string",
+        "enum": [
+          "proposed",
+          "accepted",
+          "in_progress",
+          "completed",
+          "cancelled"
+        ],
+        "title": "TreatmentPlanStatus"
+      },
+      "TreatmentPlanUpdate": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 150,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TreatmentPlanStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "items": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/TreatmentPlanItem"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "title": "TreatmentPlanUpdate"
+      },
+      "TreatmentUpdate": {
+        "properties": {
+          "category": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 60,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "default_price": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Price"
+          },
+          "default_duration_minutes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 480.0,
+                "minimum": 5.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Duration Minutes"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "title": "TreatmentUpdate"
+      },
       "UserCreate": {
         "properties": {
           "username": {
@@ -1530,9 +3797,7 @@
         "type": "oauth2",
         "flows": {
           "password": {
-            "scopes": {
-
-            },
+            "scopes": {},
             "tokenUrl": "auth/login"
           }
         }

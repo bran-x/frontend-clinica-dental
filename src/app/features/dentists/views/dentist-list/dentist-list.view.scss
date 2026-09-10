@@ -1,0 +1,109 @@
+@use '../../../../shared/styles/crud-page' as *;
+
+:host {
+  display: block;
+}
+
+.dentists-page {
+  width: 100%;
+  color: #13283a;
+}
+
+.name-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  font-size: 11px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chip {
+  border-radius: 999px;
+  background: #e6f6fc;
+  color: #006c9a;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+.color-swatch {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #cbd8e6;
+  border-radius: 50%;
+}
+
+.status-badge {
+  display: inline-flex;
+  border-radius: 999px;
+  background: #e3f8ea;
+  color: #1c8a4c;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 4px 10px;
+  text-transform: uppercase;
+}
+
+.status-badge.inactive {
+  background: #fdeaea;
+  color: #b4233c;
+}
+
+.schedule-block {
+  display: grid;
+  gap: 10px;
+}
+
+.schedule-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.schedule-row {
+  display: grid;
+  grid-template-columns: 90px 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.schedule-day {
+  color: #435469;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: none;
+}
+
+.schedule-sep {
+  color: #8a99aa;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.schedule-row input {
+  height: 40px;
+  border: 1px solid #c3d0df;
+  border-radius: 4px;
+  background: #f8fbfe;
+  color: #273c51;
+  outline: 0;
+  padding: 0 10px;
+}
+
+@media (max-width: 620px) {
+  .schedule-row {
+    grid-template-columns: 70px 1fr auto 1fr;
+  }
+}

@@ -73,8 +73,9 @@
 
       <div class="select-filters">
         <select [ngModel]="dentistFilter()" (ngModelChange)="dentistFilter.set($event)">
-          @for (dentist of dentists(); track dentist) {
-            <option [value]="dentist">{{ dentist }}</option>
+          <option value="Todos">Todos los odontologos</option>
+          @for (dentist of dentistOptions(); track dentist.id) {
+            <option [value]="dentist.id">{{ dentist.name }}</option>
           }
         </select>
       </div>
@@ -235,9 +236,9 @@
 
         <label>
           <span class="label-text">Odontologo <span>*</span></span>
-          <select name="dentist_name" required [(ngModel)]="formData.dentist_name">
-            @for (dentist of dentistOptions; track dentist) {
-              <option [value]="dentist">{{ dentist }}</option>
+          <select name="dentist_id" required [(ngModel)]="formData.dentist_id">
+            @for (dentist of dentistOptions(); track dentist.id) {
+              <option [value]="dentist.id">{{ dentist.name }}</option>
             }
           </select>
         </label>

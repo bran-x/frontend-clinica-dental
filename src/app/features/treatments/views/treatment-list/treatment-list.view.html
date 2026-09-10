@@ -1,0 +1,233 @@
+<section class="treatments-page">
+  <header class="page-heading">
+    <div>
+      <h1>Catalogo de Tratamientos</h1>
+      <p>{{ filteredTreatments().length }} tratamientos encontrados</p>
+    </div>
+
+    <div class="heading-actions">
+      <button class="primary-button" type="button" (click)="openCreate()">+ Nuevo Tratamiento</button>
+    </div>
+  </header>
+
+  <section class="filters">
+    <label class="search-field">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" />
+        <path d="m16.5 16.5 4 4" />
+      </svg>
+      <input
+        type="search"
+        placeholder="Buscar por nombre, codigo, categoria..."
+        [ngModel]="query()"
+        (ngModelChange)="query.set($event)"
+      />
+    </label>
+  </section>
+
+  @if (isLoading()) {
+    <p class="state-message">Cargando tratamientos...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="state-message error-message">{{ errorMessage() }}</p>
+  }
+
+  <section class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Categoria</th>
+          <th>Codigo</th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Duracion</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (treatment of filteredTreatments(); track treatment.id) {
+          <tr>
+            <td>{{ treatment.category }}</td>
+            <td class="strong">{{ treatment.code || '-' }}</td>
+            <td>
+              <strong>{{ treatment.name }}</strong>
+            </td>
+            <td>{{ formatPrice(treatment.defaultPrice) }}</td>
+            <td>{{ treatment.defaultDurationMinutes }} min</td>
+            <td>
+              <span class="status-badge" [class.inactive]="!treatment.isActive">
+                {{ treatment.isActive ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td>
+              <div class="row-actions">
+                <button type="button" title="Editar" (click)="openEdit(treatment)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 20h4l10.5-10.5a2.8 2.8 0 0 0-4-4L4 16v4z" />
+                    <path d="m13.5 6.5 4 4" />
+                  </svg>
+                </button>
+                <button type="button" title="Eliminar" (click)="openDelete(treatment)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 7h16" />
+                    <path d="M10 11v6" />
+                    <path d="M14 11v6" />
+                    <path d="M6 7l1 14h10l1-14" />
+                    <path d="M9 7V4h6v3" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <footer class="table-footer">
+      <span>Mostrando 1-{{ filteredTreatments().length }} de {{ treatments().length }} registros</span>
+      <div class="pagination">
+        <button type="button">«</button>
+        <button type="button">‹</button>
+        <button class="active" type="button">1</button>
+        <button type="button">›</button>
+        <button type="button">»</button>
+      </div>
+    </footer>
+  </section>
+</section>
+
+@if (modalMode() === 'create' || modalMode() === 'edit') {
+  <div class="modal-backdrop">
+    <form class="modal treatment-form" (ngSubmit)="saveTreatment()" #treatmentForm="ngForm">
+      <header class="modal-header">
+        <div class="modal-title">
+          <span class="modal-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3v18" />
+              <path d="M4 8h16" />
+            </svg>
+          </span>
+          <div>
+            <h2>{{ modalMode() === 'edit' ? 'Editar Tratamiento' : 'Nuevo Tratamiento' }}</h2>
+            <p>{{ modalMode() === 'edit' ? 'Actualice los datos del tratamiento' : 'Complete los datos del tratamiento' }}</p>
+          </div>
+        </div>
+        <button class="close-button" type="button" (click)="closeModal()">×</button>
+      </header>
+
+      <div class="form-grid">
+        <label>
+          <span class="label-text">Categoria <span>*</span></span>
+          <input name="category" placeholder="Preventiva" required [(ngModel)]="formData.category" />
+        </label>
+
+        <label>
+          <span class="label-text">Codigo</span>
+          <input name="code" placeholder="TRT-001" [(ngModel)]="formData.code" />
+        </label>
+
+        <label class="wide">
+          <span class="label-text">Nombre <span>*</span></span>
+          <input name="name" placeholder="Limpieza dental" required [(ngModel)]="formData.name" />
+        </label>
+
+        <label>
+          <span class="label-text">Precio (S/) <span>*</span></span>
+          <input
+            name="defaultPrice"
+            type="number"
+            min="0"
+            step="0.01"
+            required
+            [(ngModel)]="formData.defaultPrice"
+          />
+        </label>
+
+        <label>
+          <span class="label-text">Duracion (min) <span>*</span></span>
+          <input
+            name="defaultDurationMinutes"
+            type="number"
+            min="1"
+            step="1"
+            required
+            [(ngModel)]="formData.defaultDurationMinutes"
+          />
+        </label>
+
+        <label class="wide">
+          <span class="label-text">Descripcion</span>
+          <textarea name="description" placeholder="Detalles del tratamiento..." [(ngModel)]="formData.description"></textarea>
+        </label>
+
+        @if (modalMode() === 'edit') {
+          <label>
+            <span class="label-text">Estado</span>
+            <select name="isActive" [(ngModel)]="formData.isActive">
+              <option [ngValue]="true">Activo</option>
+              <option [ngValue]="false">Inactivo</option>
+            </select>
+          </label>
+        }
+      </div>
+
+      <footer class="modal-actions">
+        <button class="secondary-button" type="button" (click)="closeModal()">Cancelar</button>
+        <button class="primary-button" type="submit" [disabled]="treatmentForm.invalid">
+          ✓ {{ modalMode() === 'edit' ? 'Guardar cambios' : 'Guardar tratamiento' }}
+        </button>
+      </footer>
+    </form>
+  </div>
+}
+
+@if (modalMode() === 'delete' && selectedTreatment(); as treatment) {
+  <div class="modal-backdrop">
+    <article class="modal delete-modal">
+      <header class="modal-header">
+        <div class="modal-title">
+          <span class="modal-icon warning">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3 22 20H2L12 3z" />
+              <path d="M12 9v5" />
+              <path d="M12 17h.01" />
+            </svg>
+          </span>
+          <h2>Eliminar tratamiento</h2>
+        </div>
+        <button class="close-button" type="button" (click)="closeModal()">×</button>
+      </header>
+
+      <section class="delete-body">
+        <div class="trash-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+            <path d="M6 7l1 14h10l1-14" />
+            <path d="M9 7V4h6v3" />
+          </svg>
+        </div>
+        <h3>¿Esta seguro de eliminar este tratamiento?</h3>
+        <strong>{{ treatment.name }}</strong>
+        <p>Esta accion no se puede deshacer. Se eliminara permanentemente el tratamiento del catalogo.</p>
+      </section>
+
+      <footer class="delete-actions">
+        <button class="secondary-button" type="button" (click)="closeModal()">Cancelar</button>
+        <button class="danger-button" type="button" (click)="deleteTreatment()">
+          <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+            <path d="M6 7l1 14h10l1-14" />
+            <path d="M9 7V4h6v3" />
+          </svg>
+          Si, eliminar
+        </button>
+      </footer>
+    </article>
+  </div>
+}

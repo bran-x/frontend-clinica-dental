@@ -12,7 +12,7 @@ import {
 
 export interface AppointmentListFilters {
   patient_id?: string | null;
-  dentist_name?: string | null;
+  dentist_id?: string | null;
   status?: AppointmentStatusDto | null;
   date_from?: string | null;
   date_to?: string | null;
@@ -29,7 +29,7 @@ export class AppointmentApiService {
       .set('skip', filters.skip ?? 0)
       .set('limit', filters.limit ?? 50);
 
-    for (const key of ['patient_id', 'dentist_name', 'status', 'date_from', 'date_to'] as const) {
+    for (const key of ['patient_id', 'dentist_id', 'status', 'date_from', 'date_to'] as const) {
       const value = filters[key];
 
       if (value) {

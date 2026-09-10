@@ -1,0 +1,184 @@
+@use '../../../../shared/styles/crud-page';
+
+:host {
+  display: block;
+}
+
+.treatment-plans-page {
+  width: 100%;
+  color: #13283a;
+}
+
+table {
+  min-width: 1020px;
+}
+
+th:nth-child(1),
+td:nth-child(1) {
+  width: 82px;
+}
+
+th:nth-child(7),
+td:nth-child(7) {
+  width: 100px;
+  text-align: center;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 4px;
+  background: #e6f6fc;
+  color: #006c9a;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 10px;
+  text-transform: capitalize;
+}
+
+.status.aceptado {
+  background: #e4f6ea;
+  color: #1c8a4c;
+}
+
+.status.en-progreso {
+  background: #fff4de;
+  color: #b3760a;
+}
+
+.status.completado {
+  background: #e0eefb;
+  color: #1d5fa8;
+}
+
+.status.cancelado {
+  background: #ffe0e2;
+  color: #f70816;
+}
+
+.items-editor,
+.items-list {
+  display: grid;
+  gap: 12px;
+}
+
+.items-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.items-empty {
+  margin: 0;
+  color: #8a99aa;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.item-row {
+  display: grid;
+  grid-template-columns: 1.6fr 80px 80px 110px 100px auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.item-row select,
+.item-row input {
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  border: 1px solid #c3d0df;
+  border-radius: 4px;
+  background: #f8fbfe;
+  color: #273c51;
+  outline: 0;
+  padding: 0 10px;
+  font-size: 13px;
+  text-transform: none;
+}
+
+.item-row .danger-button {
+  min-height: 40px;
+}
+
+.item-line-total {
+  color: #10283c;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.items-total {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 6px;
+  border-top: 1px solid #cbd8e6;
+}
+
+.items-total span {
+  color: #60758d;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.items-total strong {
+  color: #006c9a;
+  font-size: 18px;
+}
+
+.items-list {
+  margin: 0 24px 24px;
+  padding: 16px;
+  border: 1px solid #cbd8e6;
+  border-radius: 8px;
+  background: #f8fbfe;
+}
+
+.items-list > span {
+  display: block;
+  color: #8a99aa;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.items-list ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.items-list li {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #e2eaf2;
+}
+
+.items-list li strong {
+  color: #10283c;
+  font-size: 14px;
+}
+
+.items-list li span {
+  color: #60758d;
+  font-size: 13px;
+}
+
+.treatment-plan-detail {
+  width: min(100%, 700px);
+}
+
+@media (max-width: 620px) {
+  .item-row {
+    grid-template-columns: 1fr;
+  }
+}

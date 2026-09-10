@@ -1,0 +1,245 @@
+<section class="dentists-page">
+  <header class="page-heading">
+    <div>
+      <h1>Gestion de Odontologos</h1>
+      <p>{{ filteredDentists().length }} odontologos encontrados</p>
+    </div>
+
+    <div class="heading-actions">
+      <button class="primary-button" type="button" (click)="openCreate()">+ Nuevo Odontologo</button>
+    </div>
+  </header>
+
+  <section class="filters">
+    <label class="search-field">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" />
+        <path d="m16.5 16.5 4 4" />
+      </svg>
+      <input
+        type="search"
+        placeholder="Buscar por nombre, licencia, especialidad..."
+        [ngModel]="query()"
+        (ngModelChange)="query.set($event)"
+      />
+    </label>
+  </section>
+
+  @if (isLoading()) {
+    <p class="state-message">Cargando odontologos...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="state-message error-message">{{ errorMessage() }}</p>
+  }
+
+  <section class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Licencia</th>
+          <th>Especialidades</th>
+          <th>Color</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (dentist of filteredDentists(); track dentist.id) {
+          <tr>
+            <td>{{ formatShortId(dentist.id) }}</td>
+            <td>
+              <div class="name-cell">
+                <span class="avatar">{{ getInitials(dentist) }}</span>
+                <strong>{{ dentist.fullName }}</strong>
+              </div>
+            </td>
+            <td class="strong">{{ dentist.licenseNumber || '-' }}</td>
+            <td>
+              <div class="chips">
+                @for (specialty of dentist.specialties; track specialty) {
+                  <span class="chip">{{ specialty }}</span>
+                } @empty {
+                  <span>-</span>
+                }
+              </div>
+            </td>
+            <td>
+              <span class="color-swatch" [style.background]="dentist.colorHex"></span>
+            </td>
+            <td>
+              <span class="status-badge" [class.inactive]="!dentist.isActive">
+                {{ dentist.isActive ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td>
+              <div class="row-actions">
+                <button type="button" title="Editar" (click)="openEdit(dentist)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 20h4l10.5-10.5a2.8 2.8 0 0 0-4-4L4 16v4z" />
+                    <path d="m13.5 6.5 4 4" />
+                  </svg>
+                </button>
+                <button type="button" title="Eliminar" (click)="openDelete(dentist)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 7h16" />
+                    <path d="M10 11v6" />
+                    <path d="M14 11v6" />
+                    <path d="M6 7l1 14h10l1-14" />
+                    <path d="M9 7V4h6v3" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <footer class="table-footer">
+      <span>Mostrando 1-{{ filteredDentists().length }} de {{ dentists().length }} registros</span>
+      <div class="pagination">
+        <button type="button">«</button>
+        <button type="button">‹</button>
+        <button class="active" type="button">1</button>
+        <button type="button">›</button>
+        <button type="button">»</button>
+      </div>
+    </footer>
+  </section>
+</section>
+
+@if (modalMode() === 'create' || modalMode() === 'edit') {
+  <div class="modal-backdrop">
+    <form class="modal dentist-form" (ngSubmit)="saveDentist()" #dentistForm="ngForm">
+      <header class="modal-header">
+        <div class="modal-title">
+          <span class="modal-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
+              <circle cx="9.5" cy="7" r="4" />
+              <path d="M19 8v6" />
+              <path d="M22 11h-6" />
+            </svg>
+          </span>
+          <div>
+            <h2>{{ modalMode() === 'edit' ? 'Editar Odontologo' : 'Nuevo Odontologo' }}</h2>
+            <p>{{ modalMode() === 'edit' ? 'Actualice los datos del odontologo' : 'Complete los datos del odontologo' }}</p>
+          </div>
+        </div>
+        <button class="close-button" type="button" (click)="closeModal()">×</button>
+      </header>
+
+      <div class="form-grid">
+        <label>
+          <span class="label-text">Nombre completo <span>*</span></span>
+          <input name="fullName" placeholder="Dra. Ana Torres" required [(ngModel)]="formData.fullName" />
+        </label>
+
+        <label>
+          <span class="label-text">Numero de licencia</span>
+          <input name="licenseNumber" placeholder="COP-12345" [(ngModel)]="formData.licenseNumber" />
+        </label>
+
+        <label class="wide">
+          <span class="label-text">Especialidades (separadas por coma)</span>
+          <input
+            name="specialtiesText"
+            placeholder="Ortodoncia, Endodoncia"
+            [(ngModel)]="formData.specialtiesText"
+          />
+        </label>
+
+        <label>
+          <span class="label-text">Color identificativo</span>
+          <input name="colorHex" type="color" [(ngModel)]="formData.colorHex" />
+        </label>
+
+        <label>
+          <span class="label-text">Estado</span>
+          <select name="isActive" [(ngModel)]="formData.isActive">
+            <option [ngValue]="true">Activo</option>
+            <option [ngValue]="false">Inactivo</option>
+          </select>
+        </label>
+
+        <label class="wide">
+          <span class="label-text">Biografia</span>
+          <textarea name="bio" placeholder="Experiencia, formacion..." [(ngModel)]="formData.bio"></textarea>
+        </label>
+
+        <div class="wide schedule-block">
+          <span class="label-text">Horario de atencion</span>
+          <div class="schedule-grid">
+            @for (slot of formData.workSchedule; track slot.weekday) {
+              <div class="schedule-row">
+                <span class="schedule-day">{{ weekdayLabels[slot.weekday] }}</span>
+                <input type="time" name="startTime{{ slot.weekday }}" [(ngModel)]="slot.startTime" />
+                <span class="schedule-sep">a</span>
+                <input type="time" name="endTime{{ slot.weekday }}" [(ngModel)]="slot.endTime" />
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <footer class="modal-actions">
+        <button class="secondary-button" type="button" (click)="closeModal()">Cancelar</button>
+        <button class="primary-button" type="submit" [disabled]="dentistForm.invalid">
+          ✓ {{ modalMode() === 'edit' ? 'Guardar cambios' : 'Guardar odontologo' }}
+        </button>
+      </footer>
+    </form>
+  </div>
+}
+
+@if (modalMode() === 'delete' && selectedDentist(); as dentist) {
+  <div class="modal-backdrop">
+    <article class="modal delete-modal">
+      <header class="modal-header">
+        <div class="modal-title">
+          <span class="modal-icon warning">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3 22 20H2L12 3z" />
+              <path d="M12 9v5" />
+              <path d="M12 17h.01" />
+            </svg>
+          </span>
+          <h2>Eliminar odontologo</h2>
+        </div>
+        <button class="close-button" type="button" (click)="closeModal()">×</button>
+      </header>
+
+      <section class="delete-body">
+        <div class="trash-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+            <path d="M6 7l1 14h10l1-14" />
+            <path d="M9 7V4h6v3" />
+          </svg>
+        </div>
+        <h3>¿Esta seguro de eliminar este odontologo?</h3>
+        <strong>{{ dentist.fullName }}</strong>
+        <p>Esta accion no se puede deshacer. Si el odontologo tiene citas activas no podra eliminarse.</p>
+      </section>
+
+      <footer class="delete-actions">
+        <button class="secondary-button" type="button" (click)="closeModal()">Cancelar</button>
+        <button class="danger-button" type="button" (click)="deleteDentist()">
+          <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+            <path d="M6 7l1 14h10l1-14" />
+            <path d="M9 7V4h6v3" />
+          </svg>
+          Si, eliminar
+        </button>
+      </footer>
+    </article>
+  </div>
+}

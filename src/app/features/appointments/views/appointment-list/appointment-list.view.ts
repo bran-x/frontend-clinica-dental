@@ -15,38 +15,27 @@ export class AppointmentListView implements OnInit {
 
   readonly appointments = this.appointmentController.list;
   readonly patientOptions = this.appointmentController.patientOptions;
+  readonly dentistOptions = this.appointmentController.dentistOptions;
   readonly isLoading = this.appointmentController.isLoading;
   readonly errorMessage = this.appointmentController.errorMessage;
   readonly query = signal('');
   readonly statusFilter = signal<'Todos' | Appointment['status']>('Todos');
-  readonly dentistFilter = signal('Todos los odontologos');
+  readonly dentistFilter = signal('Todos');
   readonly modalMode = signal<'create' | 'edit' | 'detail' | 'reschedule' | 'cancel' | 'delete' | null>(
     null
   );
   readonly selectedAppointment = signal<Appointment | null>(null);
 
-  readonly dentistOptions = [
-    'Dr. Pérez',
-    'Dra. Maria Salinas',
-    'Dr. Luis Torres',
-    'Dr. Carlos Mendoza',
-    'Dra. Ana Quispe'
-  ];
   formData: AppointmentFormData = this.createEmptyForm();
   rescheduleData = {
     starts_at: '',
     duration_minutes: 30
   };
 
-  readonly dentists = computed(() => [
-    'Todos los odontologos',
-    ...new Set(this.appointments().map((appointment) => appointment.dentistName))
-  ]);
-
   readonly filteredAppointments = computed(() => {
     const normalizedQuery = this.query().trim().toLowerCase();
     const status = this.statusFilter();
-    const dentist = this.dentistFilter();
+    const dentistId = this.dentistFilter();
 
     return this.appointments().filter((appointment) => {
       const matchesQuery =
@@ -55,7 +44,7 @@ export class AppointmentListView implements OnInit {
         appointment.dentistName.toLowerCase().includes(normalizedQuery) ||
         appointment.reason.toLowerCase().includes(normalizedQuery);
       const matchesStatus = status === 'Todos' || appointment.status === status;
-      const matchesDentist = dentist === 'Todos los odontologos' || appointment.dentistName === dentist;
+      const matchesDentist = dentistId === 'Todos' || appointment.dentistId === dentistId;
 
       return matchesQuery && matchesStatus && matchesDentist;
     });
@@ -180,7 +169,7 @@ export class AppointmentListView implements OnInit {
   private createEmptyForm(): AppointmentFormData {
     return {
       patient_id: '',
-      dentist_name: this.dentistOptions[0],
+      dentist_id: this.dentistOptions()[0]?.id ?? '',
       starts_at: '',
       duration_minutes: 30,
       reason: ''
@@ -190,7 +179,7 @@ export class AppointmentListView implements OnInit {
   private toFormData(appointment: Appointment): AppointmentFormData {
     return {
       patient_id: appointment.patientId,
-      dentist_name: appointment.dentistName,
+      dentist_id: appointment.dentistId,
       starts_at: `${appointment.date}T${appointment.time}`,
       duration_minutes: appointment.durationMinutes,
       reason: appointment.reason

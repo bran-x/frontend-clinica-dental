@@ -37,6 +37,34 @@ export const routes: Routes = [
           import('./features/appointments/views/appointment-list/appointment-list.view').then(
             (component) => component.AppointmentListView
           )
+      },
+      {
+        path: 'odontologos',
+        loadComponent: () =>
+          import('./features/dentists/views/dentist-list/dentist-list.view').then(
+            (component) => component.DentistListView
+          )
+      },
+      {
+        path: 'tratamientos',
+        loadComponent: () =>
+          import('./features/treatments/views/treatment-list/treatment-list.view').then(
+            (component) => component.TreatmentListView
+          )
+      },
+      {
+        path: 'historias-clinicas',
+        loadComponent: () =>
+          import('./features/clinical-records/views/clinical-record-list/clinical-record-list.view').then(
+            (component) => component.ClinicalRecordListView
+          )
+      },
+      {
+        path: 'planes-tratamiento',
+        loadComponent: () =>
+          import('./features/treatment-plans/views/treatment-plan-list/treatment-plan-list.view').then(
+            (component) => component.TreatmentPlanListView
+          )
       }
     ]
   },
