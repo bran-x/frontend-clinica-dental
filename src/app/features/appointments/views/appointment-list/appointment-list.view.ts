@@ -1,6 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
+import { NormalizedHttpError } from '../../../../core/interceptors/error.interceptor';
 import { AppointmentController } from '../../controllers/appointment.controller';
 import { Appointment, AppointmentFormData } from '../../models/appointment.model';
 
@@ -25,6 +26,7 @@ export class AppointmentListView implements OnInit {
     null
   );
   readonly selectedAppointment = signal<Appointment | null>(null);
+  readonly formError = signal('');
 
   formData: AppointmentFormData = this.createEmptyForm();
   rescheduleData = {
@@ -67,6 +69,7 @@ export class AppointmentListView implements OnInit {
     this.formData = this.createEmptyForm();
     this.formData.patient_id = this.patientOptions()[0]?.id ?? '';
     this.selectedAppointment.set(null);
+    this.formError.set('');
     this.modalMode.set('create');
   }
 
@@ -78,6 +81,7 @@ export class AppointmentListView implements OnInit {
   openEdit(appointment: Appointment): void {
     this.selectedAppointment.set(appointment);
     this.formData = this.toFormData(appointment);
+    this.formError.set('');
     this.modalMode.set('edit');
   }
 
@@ -106,16 +110,31 @@ export class AppointmentListView implements OnInit {
   }
 
   saveAppointment(): void {
+    this.formError.set('');
     const selectedAppointment = this.selectedAppointment();
 
     if (this.modalMode() === 'edit' && selectedAppointment) {
-      this.appointmentController
-        .update(selectedAppointment.id, this.formData)
-        .subscribe(() => this.closeModal());
+      this.appointmentController.update(selectedAppointment.id, this.formData).subscribe({
+        next: () => this.closeModal(),
+        error: (error) => this.formError.set(this.toFormErrorMessage(error))
+      });
       return;
     }
 
-    this.appointmentController.create(this.formData).subscribe(() => this.closeModal());
+    this.appointmentController.create(this.formData).subscribe({
+      next: () => this.closeModal(),
+      error: (error) => this.formError.set(this.toFormErrorMessage(error))
+    });
+  }
+
+  private toFormErrorMessage(error: unknown): string {
+    const normalized = error as Partial<NormalizedHttpError>;
+
+    if (normalized?.status === 409) {
+      return 'Ya existe una cita para ese odontologo en el horario seleccionado. Elija otro horario.';
+    }
+
+    return normalized?.message ?? 'No se pudo guardar la cita. Intente nuevamente.';
   }
 
   saveReschedule(): void {

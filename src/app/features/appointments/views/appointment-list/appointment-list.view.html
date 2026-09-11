@@ -266,6 +266,10 @@
         </label>
       </div>
 
+      @if (formError()) {
+        <p class="state-message error-message form-error">{{ formError() }}</p>
+      }
+
       <footer class="modal-actions">
         <button class="secondary-button" type="button" (click)="closeModal()">Cancelar</button>
         <button class="primary-button" type="submit" [disabled]="appointmentForm.invalid">
