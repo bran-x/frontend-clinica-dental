@@ -10,6 +10,7 @@ import {
   DentistOutDto,
   PatientOutDto
 } from '../../../core/api/api.types';
+import { toNameMap } from '../../../shared/utils/name-map.util';
 import { PatientApiService } from '../../patients/services/patient-api.service';
 import { ClinicalRecordApiService } from '../services/clinical-record-api.service';
 import {
@@ -164,18 +165,34 @@ export class ClinicalRecordController {
   }
 
   private createPatientNameMap(patients: PatientOutDto[]): Map<string, string> {
-    return new Map(patients.map((patient) => [patient.id, `${patient.first_name} ${patient.last_name}`]));
+    return toNameMap(
+      patients,
+      (patient) => patient.id,
+      (patient) => `${patient.first_name} ${patient.last_name}`
+    );
   }
 
   private createDentistNameMap(dentists: DentistOutDto[]): Map<string, string> {
-    return new Map(dentists.map((dentist) => [dentist.id, dentist.full_name]));
+    return toNameMap(
+      dentists,
+      (dentist) => dentist.id,
+      (dentist) => dentist.full_name
+    );
   }
 
   private currentPatientNames(): Map<string, string> {
-    return new Map(this.patients().map((patient) => [patient.id, patient.name]));
+    return toNameMap(
+      this.patients(),
+      (patient) => patient.id,
+      (patient) => patient.name
+    );
   }
 
   private currentDentistNames(): Map<string, string> {
-    return new Map(this.dentists().map((dentist) => [dentist.id, dentist.name]));
+    return toNameMap(
+      this.dentists(),
+      (dentist) => dentist.id,
+      (dentist) => dentist.name
+    );
   }
 }

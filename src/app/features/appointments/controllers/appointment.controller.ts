@@ -11,6 +11,7 @@ import {
   DentistOutDto,
   PatientOutDto
 } from '../../../core/api/api.types';
+import { toNameMap } from '../../../shared/utils/name-map.util';
 import { PatientApiService } from '../../patients/services/patient-api.service';
 import { AppointmentApiService } from '../services/appointment-api.service';
 import {
@@ -183,11 +184,19 @@ export class AppointmentController {
   }
 
   private createPatientNameMap(patients: PatientOutDto[]): Map<string, string> {
-    return new Map(patients.map((patient) => [patient.id, `${patient.first_name} ${patient.last_name}`]));
+    return toNameMap(
+      patients,
+      (patient) => patient.id,
+      (patient) => `${patient.first_name} ${patient.last_name}`
+    );
   }
 
   private currentPatientNames(): Map<string, string> {
-    return new Map(this.patients().map((patient) => [patient.id, patient.name]));
+    return toNameMap(
+      this.patients(),
+      (patient) => patient.id,
+      (patient) => patient.name
+    );
   }
 
   private toApiDateTime(value: string): string {

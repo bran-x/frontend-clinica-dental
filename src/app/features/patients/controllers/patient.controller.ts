@@ -1,63 +1,46 @@
-import { Injectable, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 import { PatientCreateDto, PatientOutDto, PatientUpdateDto } from '../../../core/api/api.types';
+import { SimpleCrudController } from '../../../shared/controllers/simple-crud.controller';
 import { PatientApiService } from '../services/patient-api.service';
 import { Patient, PatientFormData } from '../models/patient.model';
 
 @Injectable({ providedIn: 'root' })
-export class PatientController {
-  private readonly patients = signal<Patient[]>([]);
+export class PatientController extends SimpleCrudController<
+  Patient,
+  PatientOutDto,
+  PatientFormData,
+  PatientCreateDto,
+  PatientUpdateDto
+> {
+  protected readonly loadErrorMessage = 'No se pudieron cargar los pacientes del backend.';
 
-  readonly list = this.patients.asReadonly();
-  readonly isLoading = signal(false);
-  readonly errorMessage = signal('');
-
-  constructor(private readonly patientApiService: PatientApiService) {}
-
-  load(q?: string): void {
-    this.isLoading.set(true);
-    this.errorMessage.set('');
-
-    this.patientApiService.list(q).subscribe({
-      next: (patients) => {
-        this.patients.set(patients.map((patient) => this.toPatient(patient)));
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.errorMessage.set('No se pudieron cargar los pacientes del backend.');
-        this.isLoading.set(false);
-      }
-    });
+  constructor(private readonly patientApiService: PatientApiService) {
+    super();
   }
 
-  create(data: PatientFormData): Observable<PatientOutDto> {
-    return this.patientApiService.create(this.toCreateDto(data)).pipe(
-      tap((createdPatient) =>
-        this.patients.update((patients) => [this.toPatient(createdPatient), ...patients])
-      )
-    );
+  protected apiList(q?: string): Observable<PatientOutDto[]> {
+    return this.patientApiService.list(q);
   }
 
-  update(patientId: string, data: PatientFormData): Observable<PatientOutDto> {
-    return this.patientApiService.update(patientId, this.toUpdateDto(data)).pipe(
-      tap((updatedPatient) =>
-        this.patients.update((patients) =>
-          patients.map((patient) =>
-            patient.id === patientId ? this.toPatient(updatedPatient) : patient
-          )
-        )
-      )
-    );
+  protected apiCreate(data: PatientCreateDto): Observable<PatientOutDto> {
+    return this.patientApiService.create(data);
   }
 
-  remove(patientId: string): Observable<void> {
-    return this.patientApiService.remove(patientId).pipe(
-      tap(() => this.patients.update((patients) => patients.filter((patient) => patient.id !== patientId)))
-    );
+  protected apiUpdate(id: string, data: PatientUpdateDto): Observable<PatientOutDto> {
+    return this.patientApiService.update(id, data);
   }
 
-  private toPatient(patient: PatientOutDto): Patient {
+  protected apiRemove(id: string): Observable<void> {
+    return this.patientApiService.remove(id);
+  }
+
+  protected getId(model: Patient): string {
+    return model.id;
+  }
+
+  protected toModel(patient: PatientOutDto): Patient {
     return {
       id: patient.id,
       dni: patient.document_id,
@@ -71,7 +54,7 @@ export class PatientController {
     };
   }
 
-  private toCreateDto(data: PatientFormData): PatientCreateDto {
+  protected toCreateDto(data: PatientFormData): PatientCreateDto {
     return {
       first_name: data.firstName,
       last_name: data.lastName,
@@ -83,7 +66,7 @@ export class PatientController {
     };
   }
 
-  private toUpdateDto(data: PatientFormData): PatientUpdateDto {
+  protected toUpdateDto(data: PatientFormData): PatientUpdateDto {
     return this.toCreateDto(data);
   }
 }

@@ -1,63 +1,46 @@
-import { Injectable, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 import { DentistCreateDto, DentistOutDto, DentistUpdateDto } from '../../../core/api/api.types';
+import { SimpleCrudController } from '../../../shared/controllers/simple-crud.controller';
 import { DentistApiService } from '../services/dentist-api.service';
 import { Dentist, DentistFormData } from '../models/dentist.model';
 
 @Injectable({ providedIn: 'root' })
-export class DentistController {
-  private readonly dentists = signal<Dentist[]>([]);
+export class DentistController extends SimpleCrudController<
+  Dentist,
+  DentistOutDto,
+  DentistFormData,
+  DentistCreateDto,
+  DentistUpdateDto
+> {
+  protected readonly loadErrorMessage = 'No se pudieron cargar los odontologos del backend.';
 
-  readonly list = this.dentists.asReadonly();
-  readonly isLoading = signal(false);
-  readonly errorMessage = signal('');
-
-  constructor(private readonly dentistApiService: DentistApiService) {}
-
-  load(q?: string): void {
-    this.isLoading.set(true);
-    this.errorMessage.set('');
-
-    this.dentistApiService.list(q).subscribe({
-      next: (dentists) => {
-        this.dentists.set(dentists.map((dentist) => this.toDentist(dentist)));
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.errorMessage.set('No se pudieron cargar los odontologos del backend.');
-        this.isLoading.set(false);
-      }
-    });
+  constructor(private readonly dentistApiService: DentistApiService) {
+    super();
   }
 
-  create(data: DentistFormData): Observable<DentistOutDto> {
-    return this.dentistApiService.create(this.toCreateDto(data)).pipe(
-      tap((createdDentist) =>
-        this.dentists.update((dentists) => [this.toDentist(createdDentist), ...dentists])
-      )
-    );
+  protected apiList(q?: string): Observable<DentistOutDto[]> {
+    return this.dentistApiService.list(q);
   }
 
-  update(dentistId: string, data: DentistFormData): Observable<DentistOutDto> {
-    return this.dentistApiService.update(dentistId, this.toUpdateDto(data)).pipe(
-      tap((updatedDentist) =>
-        this.dentists.update((dentists) =>
-          dentists.map((dentist) =>
-            dentist.id === dentistId ? this.toDentist(updatedDentist) : dentist
-          )
-        )
-      )
-    );
+  protected apiCreate(data: DentistCreateDto): Observable<DentistOutDto> {
+    return this.dentistApiService.create(data);
   }
 
-  remove(dentistId: string): Observable<void> {
-    return this.dentistApiService.remove(dentistId).pipe(
-      tap(() => this.dentists.update((dentists) => dentists.filter((dentist) => dentist.id !== dentistId)))
-    );
+  protected apiUpdate(id: string, data: DentistUpdateDto): Observable<DentistOutDto> {
+    return this.dentistApiService.update(id, data);
   }
 
-  private toDentist(dentist: DentistOutDto): Dentist {
+  protected apiRemove(id: string): Observable<void> {
+    return this.dentistApiService.remove(id);
+  }
+
+  protected getId(model: Dentist): string {
+    return model.id;
+  }
+
+  protected toModel(dentist: DentistOutDto): Dentist {
     return {
       id: dentist.id,
       fullName: dentist.full_name,
@@ -75,7 +58,7 @@ export class DentistController {
     };
   }
 
-  private toCreateDto(data: DentistFormData): DentistCreateDto {
+  protected toCreateDto(data: DentistFormData): DentistCreateDto {
     return {
       full_name: data.fullName,
       license_number: data.licenseNumber || null,
@@ -92,7 +75,7 @@ export class DentistController {
     };
   }
 
-  private toUpdateDto(data: DentistFormData): DentistUpdateDto {
+  protected toUpdateDto(data: DentistFormData): DentistUpdateDto {
     return {
       ...this.toCreateDto(data),
       is_active: data.isActive
