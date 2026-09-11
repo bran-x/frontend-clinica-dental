@@ -5,7 +5,7 @@ import { TOKEN_STORAGE_KEY } from '../../../core/interceptors/auth-token.interce
 import { AuthApiService } from '../services/auth-api.service';
 import { AuthUser, LoginCredentials, RegisterData } from '../models/auth.models';
 
-const AUTH_STORAGE_KEY = 'muelas_dent_auth_user';
+export const AUTH_STORAGE_KEY = 'muelas_dent_auth_user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthController {
