@@ -1,1 +1,3 @@
-export const API_BASE_URL = 'https://back-clinic-test.xbrandev.dpdns.org';
+import { environment } from '../../../environments/environment';
+
+export const API_BASE_URL = environment.apiBaseUrl;
