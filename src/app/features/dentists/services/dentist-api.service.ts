@@ -1,12 +1,14 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 import { CrudApiBaseService } from '../../../core/api/crud-api-base.service';
 import { DentistCreateDto, DentistOutDto, DentistUpdateDto } from '../../../core/api/api.types';
 
 @Injectable({ providedIn: 'root' })
 export class DentistApiService extends CrudApiBaseService<DentistOutDto, DentistCreateDto, DentistUpdateDto> {
-  constructor(http: HttpClient) {
+  constructor() {
+    const http = inject(HttpClient);
+
     super(http, 'dentists');
   }
 

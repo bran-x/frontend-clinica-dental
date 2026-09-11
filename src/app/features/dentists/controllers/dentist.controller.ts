@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { DentistCreateDto, DentistOutDto, DentistUpdateDto } from '../../../core/api/api.types';
@@ -14,11 +14,9 @@ export class DentistController extends SimpleCrudController<
   DentistCreateDto,
   DentistUpdateDto
 > {
-  protected readonly loadErrorMessage = 'No se pudieron cargar los odontologos del backend.';
+  private readonly dentistApiService = inject(DentistApiService);
 
-  constructor(private readonly dentistApiService: DentistApiService) {
-    super();
-  }
+  protected readonly loadErrorMessage = 'No se pudieron cargar los odontologos del backend.';
 
   protected apiList(q?: string): Observable<DentistOutDto[]> {
     return this.dentistApiService.list(q);

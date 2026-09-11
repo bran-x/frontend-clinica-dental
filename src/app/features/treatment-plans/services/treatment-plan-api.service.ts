@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 import { CrudApiBaseService } from '../../../core/api/crud-api-base.service';
 import {
@@ -14,7 +14,9 @@ export class TreatmentPlanApiService extends CrudApiBaseService<
   TreatmentPlanCreateDto,
   TreatmentPlanUpdateDto
 > {
-  constructor(http: HttpClient) {
+  constructor() {
+    const http = inject(HttpClient);
+
     super(http, 'treatment-plans');
   }
 

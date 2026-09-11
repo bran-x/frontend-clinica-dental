@@ -1,12 +1,13 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 import { API_BASE_URL } from '../../../core/api/api.config';
 import { TokenResponse, UserCreateDto, UserOutDto } from '../../../core/api/api.types';
 
 @Injectable({ providedIn: 'root' })
 export class AuthApiService {
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
+
 
   login(username: string, password: string) {
     const body = new HttpParams().set('username', username).set('password', password);

@@ -22,6 +22,9 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ClinicalRecordController {
+  private readonly clinicalRecordApiService = inject(ClinicalRecordApiService);
+  private readonly patientApiService = inject(PatientApiService);
+
   private readonly http = inject(HttpClient);
 
   private readonly clinicalRecords = signal<ClinicalRecord[]>([]);
@@ -33,11 +36,6 @@ export class ClinicalRecordController {
   readonly dentistOptions = this.dentists.asReadonly();
   readonly isLoading = signal(false);
   readonly errorMessage = signal('');
-
-  constructor(
-    private readonly clinicalRecordApiService: ClinicalRecordApiService,
-    private readonly patientApiService: PatientApiService
-  ) {}
 
   load(): void {
     this.isLoading.set(true);

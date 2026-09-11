@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { TreatmentCreateDto, TreatmentOutDto, TreatmentUpdateDto } from '../../../core/api/api.types';
@@ -14,11 +14,9 @@ export class TreatmentController extends SimpleCrudController<
   TreatmentCreateDto,
   TreatmentUpdateDto
 > {
-  protected readonly loadErrorMessage = 'No se pudieron cargar los tratamientos del backend.';
+  private readonly treatmentApiService = inject(TreatmentApiService);
 
-  constructor(private readonly treatmentApiService: TreatmentApiService) {
-    super();
-  }
+  protected readonly loadErrorMessage = 'No se pudieron cargar los tratamientos del backend.';
 
   protected apiList(q?: string): Observable<TreatmentOutDto[]> {
     return this.treatmentApiService.list(q);

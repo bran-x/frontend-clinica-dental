@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { catchError, map, of, switchMap, tap } from 'rxjs';
 
 import { TOKEN_STORAGE_KEY } from '../../../core/interceptors/auth-token.interceptor';
@@ -9,11 +9,11 @@ export const AUTH_STORAGE_KEY = 'muelas_dent_auth_user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthController {
+  private readonly authApiService = inject(AuthApiService);
+
   private readonly currentUser = signal<AuthUser | null>(this.readStoredUser());
 
   readonly user = this.currentUser.asReadonly();
-
-  constructor(private readonly authApiService: AuthApiService) {}
 
   isAuthenticated(): boolean {
     return this.currentUser() !== null && localStorage.getItem(TOKEN_STORAGE_KEY) !== null;
