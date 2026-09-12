@@ -1,0 +1,15 @@
+[
+  {
+    "id": "d1",
+    "full_name": "Dra. Ana Torres",
+    "license_number": "COP-12345",
+    "specialties": ["Ortodoncia"],
+    "color_hex": "#3366ff",
+    "bio": null,
+    "work_schedule": [],
+    "schedule_exceptions": [],
+    "is_active": true,
+    "created_at": "2024-01-01T00:00:00Z",
+    "updated_at": "2024-01-01T00:00:00Z"
+  }
+]

@@ -1,0 +1,13 @@
+[
+  {
+    "id": "t1",
+    "category": "Preventiva",
+    "code": "TRT-001",
+    "name": "Limpieza dental",
+    "description": "Limpieza y profilaxis",
+    "default_price": 120.5,
+    "default_duration_minutes": 45,
+    "is_active": true,
+    "created_at": "2024-01-01T00:00:00Z"
+  }
+]

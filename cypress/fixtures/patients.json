@@ -1,0 +1,14 @@
+[
+  {
+    "id": "p1",
+    "first_name": "Ana",
+    "last_name": "Gomez",
+    "document_id": "12345678",
+    "email": "ana@example.com",
+    "phone": "987654321",
+    "birth_date": "1990-01-01",
+    "notes": null,
+    "created_at": "2024-01-01T00:00:00Z",
+    "updated_at": "2024-01-01T00:00:00Z"
+  }
+]

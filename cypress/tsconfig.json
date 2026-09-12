@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "types": ["cypress", "node"]
+  },
+  "include": ["**/*.ts"]
+}
